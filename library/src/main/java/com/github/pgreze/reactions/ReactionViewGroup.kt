@@ -99,7 +99,10 @@ class ReactionViewGroup(context: Context, private val config: ReactionsConfig) :
             Log.i(tag, "State: $oldValue -> $value")
             when (value) {
                 is ReactionViewState.Boundary -> animTranslationY(value)
-                is ReactionViewState.WaitingSelection -> animSize(null)
+                is ReactionViewState.WaitingSelection -> {
+                    animSize(null)
+                    dialogHeight = mediumIconSize + 2 * verticalPadding
+                }
                 is ReactionViewState.Selected -> animSize(value)
             }
         }
@@ -200,6 +203,23 @@ class ReactionViewGroup(context: Context, private val config: ReactionsConfig) :
         this.parentLocation = IntArray(2)
                 .also(parent::getLocationOnScreen)
                 .let { Point(it[0], it[1]) }
+        parentSize = Size(parent.width, parent.height)
+        isFirstTouchAlwaysInsideButton = true
+        isIgnoringFirstReaction = true
+
+        // Resize, could be fixed with later resolved width/height
+        onSizeChanged(width, height, width, height)
+
+        // Appear effect
+        visibility = View.VISIBLE
+        currentState = ReactionViewState.Boundary.Appear(path = dialogHeight to 0)
+    }
+
+    fun show(parent: View) {
+        this.firstClick = Point(parent.x.roundToInt() + 100, parent.y.roundToInt())
+        this.parentLocation = IntArray(2)
+            .also(parent::getLocationOnScreen)
+            .let { Point(it[0], it[1]) }
         parentSize = Size(parent.width, parent.height)
         isFirstTouchAlwaysInsideButton = true
         isIgnoringFirstReaction = true
@@ -373,6 +393,7 @@ class ReactionViewGroup(context: Context, private val config: ReactionsConfig) :
                                     ?: return
                             reactionText.visibility = View.VISIBLE
                             requestLayout()
+                            dialogHeight = smallIconSize + 2 * verticalPadding
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {}

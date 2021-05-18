@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Reactions Sample</string>
+    <string name="like">Like</string>
+    <string name="txt_like">Like</string>
+    <string name="txt_like_it">Like it</string>
     <string-array name="crypto_symbols">
         <item>btc</item>
         <item>eth</item>
